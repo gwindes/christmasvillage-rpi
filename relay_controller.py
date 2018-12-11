@@ -75,30 +75,51 @@ def set_relay(pin):
         GPIO.output(pin, GPIO.HIGH)
 
 
+def turn_off_all_relays():
+    for pin in pin_list:
+        GPIO.output(pin, GPIO.HIGH)
+
+
+def turn_on_all_relays():
+    for pin in pin_list:
+        GPIO.output(pin, GPIO.LOW)
+
+
 def disco_mode():
     count = 120
     while count > 0:
-        r = randint(0, len(pin_list))
+        r = randint(0, len(pin_list)-1)
         pin = pin_list[r]
         set_relay(pin)
         count -= 1
+        sleep(0.1)
+
+    turn_on_all_relays()
+    sleep(0.5)
+    turn_off_all_relays()
+    sleep(0.5)
+    turn_on_all_relays()
+    sleep(0.5)
+    turn_off_all_relays()
+    sleep(0.5)
+    turn_on_all_relays()
 
 
 def get_sqs():
     sqs = boto3.resource('sqs',
-                            region_name='',
-                            aws_secret_access_key='',
-                            aws_access_key_id='',
-                            use_ssl=True)
+                         region_name='',
+                         aws_secret_access_key='',
+                         aws_access_key_id='',
+                         use_ssl=True)
     queue = sqs.Queue('')
     return queue
 
 
 def main():
+    init_gpio()
     queue = get_sqs()
 
     while True:
-        sleep(15)
         msg = queue.receive_messages()[0]
         pin = parse_input_to_pin(msg['body'])
         if pin == DISCO:
@@ -106,6 +127,7 @@ def main():
         else:
             set_relay(pin)
         queue.delete_message(ReceiptHandle=msg['_receiptHandle'])
+        sleep(10)
 
 
 if __name__ == '__main__':

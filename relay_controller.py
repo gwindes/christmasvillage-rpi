@@ -127,13 +127,13 @@ def main():
             continue
 
         msg = messages[0]
-        pin = parse_input_to_pin(msg['body'])
+        pin = parse_input_to_pin(msg.body)
         if pin == DISCO:
             disco_mode()
         else:
             set_relay(pin)
 
-        queue.delete_message(ReceiptHandle=msg['_receiptHandle'])
+        queue.delete_message(ReceiptHandle=msg.receipt_handle)
 
 
 if __name__ == '__main__':

@@ -14,6 +14,9 @@ import requests
 import boto3
 
 
+class InvalidVote(Exception):
+    pass
+
 class TwitchBot(irc.bot.SingleServerIRCBot):
     def __init__(self, username, client_id, token, channel):
         self.client_id = client_id
@@ -68,11 +71,12 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
 
 
     def parse_vote_event(self, event):
-        vote = event.arguments[0].split(' ')[1]
+        param = event.arguments[0].lower()
+        vote = param.split(' ')[1]
 
         if vote not in self.vote_types:
             valid_types = ' | '.join(self.vote_types)
-            raise Exception('Invalid vote type: {} Try from the following: {}'.format(vote, valid_types))
+            raise InvalidVote('Invalid vote type: {} Try from the following: {}'.format(vote, valid_types))
 
         return vote
 
@@ -82,14 +86,13 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
 
 
     def handle_vote(self, vote, user):
-        print(vote, user)
-
         if user in self.users_voted:
-            raise Exception('You have already voted. You can vote again in {} seconds'.format('TBD'))
+            raise InvalidVote('You have already voted. You can vote again in {} seconds'.format('TBD'))
 
         if vote in self.votes:
             self.votes[vote] += 1
             self.users_voted.add(user)
+            print(vote, user)
 
 
     def do_command(self, event, cmd):
@@ -101,7 +104,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
                 user_id = self.parse_user_id(event)
                 self.handle_vote(vote, user_id)
                 c.privmsg(self.channel, 'Added your vote {}'.format(vote))
-            except Exception as ex:
+            except InvalidVote as ex:
                 c.privmsg(self.channel, str(ex))
         else:
             c.privmsg(self.channel, 'Did not understand command: ' + cmd)

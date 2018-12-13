@@ -120,14 +120,20 @@ def main():
     queue = get_sqs()
 
     while True:
-        msg = queue.receive_messages()[0]
+        sleep(10)
+        messages = queue.receive_messages()
+
+        if len(messages) == 0:
+            continue
+
+        msg = messages[0]
         pin = parse_input_to_pin(msg['body'])
         if pin == DISCO:
             disco_mode()
         else:
             set_relay(pin)
+
         queue.delete_message(ReceiptHandle=msg['_receiptHandle'])
-        sleep(10)
 
 
 if __name__ == '__main__':

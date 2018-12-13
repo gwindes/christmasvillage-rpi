@@ -31,6 +31,10 @@ pin_list = [
 ]
 
 
+class InvalidInputException(Exception):
+    pass
+
+
 def init_gpio():
     for i in pin_list:
         GPIO.setup(i, GPIO.OUT)
@@ -62,14 +66,20 @@ def parse_input_to_pin(input):
         return ALL
     elif input == 'DISCO':
         return DISCO
+    else:
+        raise InvalidInputException()
 
 
 def set_relay(pin):
     if pin == ALL:
         for p in pin_list:
             GPIO.output(p, GPIO.HIGH)
+        return
 
-    if GPIO.input(pin) is 1:
+    if GPIO.input(pin) == None:
+        print('pin {} is None'.format(pin))
+
+    if GPIO.input(pin) == 1:
         GPIO.output(pin, GPIO.LOW)
     else:
         GPIO.output(pin, GPIO.HIGH)
@@ -127,13 +137,21 @@ def main():
             continue
 
         msg = messages[0]
-        pin = parse_input_to_pin(msg.body)
+
+        try:
+            pin = parse_input_to_pin(msg.body)
+        except InvalidInputException as ex:
+            print(ex)
+            msg.delete()
+            continue
+
+        msg.delete()
+
         if pin == DISCO:
             disco_mode()
         else:
             set_relay(pin)
 
-        queue.delete_message(ReceiptHandle=msg.receipt_handle)
 
 
 if __name__ == '__main__':

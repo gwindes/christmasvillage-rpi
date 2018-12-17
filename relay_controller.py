@@ -5,17 +5,28 @@ from random import randint
 
 GPIO.setmode(GPIO.BCM)
 
+# OUTLET -> GPIO
+OUT1 = 2
+OUT2 = 3
+OUT3 = 4
+OUT4 = 17
+OUT5 = 27
+OUT6 = 22
+OUT7 = 10
+OUT8 = 9
+
 # PINS
-SANTA_HOUSE = 2
-ELVES_BUNK = 3
-POST_OFFICE = 4
-REINDEER_STABLES = 17
-TREE = 27
-TRAIN = 22
+SANTA_HOUSE = OUT6
+ELVES_BUNK = OUT2
+POST_OFFICE = OUT4
+REINDEER_STABLES = OUT1
+TREE = OUT5
+TRAIN = OUT7
 
 # Modes
 ALL = 99
 DISCO = 1337
+WIZARDS = 7331
 
 # pin_list = [2, 3, 4, 17, 27, 22, 10, 9]
 
@@ -25,10 +36,10 @@ pin_list = [
     POST_OFFICE,
     REINDEER_STABLES,
     TREE,
-    TRAIN,
-    10,
-    9
+    TRAIN
 ]
+
+disco_pin_list = pin_list[:-1]
 
 
 class InvalidInputException(Exception):
@@ -63,17 +74,21 @@ def parse_input_to_pin(input):
         print('TRAIN')
         return TRAIN
     elif input == 'ALL':
+        print('ALL')
         return ALL
     elif input == 'DISCO':
+        print('DISCO')
         return DISCO
+    elif input == 'WIZARDS':
+        print('WIZARDS')
+        return WIZARDS
     else:
         raise InvalidInputException()
 
 
 def set_relay(pin):
     if pin == ALL:
-        for p in pin_list:
-            GPIO.output(p, GPIO.HIGH)
+        turn_on_all_relays()
         return
 
     if GPIO.input(pin) == None:
@@ -85,21 +100,43 @@ def set_relay(pin):
         GPIO.output(pin, GPIO.HIGH)
 
 
+def wizards_in_winter():
+    turn_off_all_relays()
+
+    sleep(0.2)
+    set_relay(ELVES_BUNK)
+    sleep(0.2)
+    set_relay(REINDEER_STABLES)
+    sleep(0.2)
+    set_relay(SANTA_HOUSE)
+    sleep(0.2)
+    set_relay(TREE)
+    sleep(0.2)
+    set_relay(POST_OFFICE)
+    sleep(0.2)
+
+    turn_off_all_relays()
+    sleep(0.2)
+    turn_on_all_relays()
+    sleep(0.5)
+
 def turn_off_all_relays():
-    for pin in pin_list:
+    # use disco pin list to avoid rapid on/off of train
+    for pin in disco_pin_list:
         GPIO.output(pin, GPIO.HIGH)
 
 
 def turn_on_all_relays():
-    for pin in pin_list:
+    # use disco pin list to avoid rapid on/off of train
+    for pin in disco_pin_list:
         GPIO.output(pin, GPIO.LOW)
 
 
 def disco_mode():
     count = 120
     while count > 0:
-        r = randint(0, len(pin_list)-1)
-        pin = pin_list[r]
+        r = randint(0, len(disco_pin_list)-1)
+        pin = disco_pin_list[r]
         set_relay(pin)
         count -= 1
         sleep(0.1)
@@ -113,7 +150,6 @@ def disco_mode():
     turn_off_all_relays()
     sleep(0.5)
     turn_on_all_relays()
-
 
 def get_sqs():
     sqs = boto3.resource('sqs',
@@ -130,7 +166,7 @@ def main():
     queue = get_sqs()
 
     while True:
-        sleep(10)
+        sleep(3)
         messages = queue.receive_messages()
 
         if len(messages) == 0:
@@ -139,6 +175,7 @@ def main():
         msg = messages[0]
 
         try:
+            print(msg.body)
             pin = parse_input_to_pin(msg.body)
         except InvalidInputException as ex:
             print(ex)
@@ -147,7 +184,11 @@ def main():
 
         msg.delete()
 
-        if pin == DISCO:
+        if pin == WIZARDS:
+            wizards_in_winter()
+            wizards_in_winter()
+            wizards_in_winter()
+        elif pin == DISCO:
             disco_mode()
         else:
             set_relay(pin)

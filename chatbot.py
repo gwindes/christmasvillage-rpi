@@ -7,15 +7,20 @@ Licensed under the Apache License, Version 2.0 (the 'License'). You may not use 
 
 or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 """
-
 import sys
 import irc.bot
 import requests
 import boto3
+from irc.schedule import DefaultScheduler
+import uuid
+import time
+
+VOTE_DURATION = 60
 
 
 class InvalidVote(Exception):
     pass
+
 
 class TwitchBot(irc.bot.SingleServerIRCBot):
     def __init__(self, username, client_id, token, channel):
@@ -23,11 +28,22 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         self.token = token
         self.channel = '#' + channel
 
-        self.vote_types = ['all', 'disco', 'tree', 'santa', 'postoffice', 'elves', 'reindeer', 'train']
+        self.vote_translation = {
+            'all': 'ALL',
+            'disco': 'DISCO',
+            'tree': 'TREE',
+            'santa': 'SANTA_HOUSE',
+            'postoffice': 'POST_OFFICE',
+            'elves': 'ELVES_HOUSE',
+            'reindeer': 'REINDEER_STABLES',
+            'train': 'TRAIN'
+        }
+        self.vote_types = self.vote_translation.keys()
         self.votes = dict()
         self.users_voted = set()
 
         self.reset_votes()
+        self.last_vote_cast_time = time.time()
 
         # Get the channel id, we will need this for v5 API calls
         url = 'https://api.twitch.tv/kraken/users?login=' + channel
@@ -38,19 +54,48 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         # Create IRC bot connection
         server = 'irc.chat.twitch.tv'
         port = 6667
-        print()
         'Connecting to ' + server + ' on port ' + str(port) + '...'
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port, 'oauth:' + token)], username, username)
 
+    def tally_votes(self):
+        print('counting votes')
+        max_count = 0
+        voted_type = None
+
+        for vote_type in self.vote_types:
+            if self.votes[vote_type] > max_count:
+                max_count = self.votes[vote_type]
+                voted_type = vote_type
+
+        if voted_type is not None:
+            self.msg_vote(voted_type, max_count)
+            self.send_vote_to_sqs(voted_type)
+            self.reset_votes()
+
+    def msg_vote(self, vote, count):
+        c = self.connection
+        c.privmsg(self.channel, 'Casting vote: {} with {} votes'.format(vote, count))
+
+    def send_vote_to_sqs(self, vote):
+        print('Sending {} to village'.format(vote))
+        sqs = boto3.resource('sqs',
+                             region_name='',
+                             aws_secret_access_key='',
+                             aws_access_key_id='',
+                             use_ssl=True)
+        queue = sqs.Queue('')
+        v = self.vote_translation[vote]
+        queue.send_message(MessageBody=v, MessageGroupId='1', MessageDeduplicationId=str(uuid.uuid4()))
+        return queue
 
     def reset_votes(self):
-        for type in self.vote_types:
-            self.votes[type] = 0
+        for vote_type in self.vote_types:
+            self.votes[vote_type] = 0
 
         self.users_voted = set()
+        self.last_vote_cast_time = time.time()
 
     def on_welcome(self, c, e):
-        print()
         'Joining ' + self.channel
 
         # You must request specific capabilities before you can use them
@@ -60,15 +105,12 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         c.join(self.channel)
 
     def on_pubmsg(self, c, e):
-
         # If a chat message starts with an exclamation point, try to run it as a command
         if e.arguments[0][:1] == '!':
             cmd = e.arguments[0].split(' ')[0][1:]
-            print()
-            'Received command: ' + cmd
+            # print('Received command: ' + cmd)
             self.do_command(e, cmd)
         return
-
 
     def parse_vote_event(self, event):
         param = event.arguments[0].lower()
@@ -80,20 +122,18 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
 
         return vote
 
-
     def parse_user_id(self, event):
         return event.tags[11]['value']
 
-
     def handle_vote(self, vote, user):
         if user in self.users_voted:
-            raise InvalidVote('You have already voted. You can vote again in {} seconds'.format('TBD'))
+            seconds_until_vote_allowed = VOTE_DURATION - (time.time() - self.last_vote_cast_time)
+            raise InvalidVote('You have already voted. You can vote again in {:.0f} seconds'.format(seconds_until_vote_allowed))
 
         if vote in self.votes:
             self.votes[vote] += 1
             self.users_voted.add(user)
             print(vote, user)
-
 
     def do_command(self, event, cmd):
         c = self.connection
@@ -121,7 +161,11 @@ def main():
     token = sys.argv[3]
     channel = sys.argv[4]
 
+    scheduler = DefaultScheduler()
+
     bot = TwitchBot(username, client_id, token, channel)
+    scheduler.execute_every(VOTE_DURATION, bot.tally_votes)
+    bot.reactor.scheduler = scheduler
     bot.start()
 
 

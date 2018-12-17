@@ -99,8 +99,33 @@ def set_relay(pin):
     else:
         GPIO.output(pin, GPIO.HIGH)
 
+def wizards_main():
+    for i in range(6): triple_beat()
+    piano()
+    for i in range(6): triple_beat()
+    alt_back_forth(delay=0.3)
+    for i in range(4): alt_back_forth()
+    turn_off_all_relays()
+    sleep(0.1)
+    turn_on_all_relays()
+    for i in range(4): alt_back_forth()
 
-def wizards_in_winter():
+def triple_beat():
+    turn_off_all_relays()
+
+    sleep(0.1)
+    turn_on_all_relays()
+    sleep(0.1)
+    turn_off_all_relays()
+    sleep(0.1)
+    turn_on_all_relays()
+    sleep(0.1)
+    turn_off_all_relays()
+    sleep(0.1)
+    turn_on_all_relays()
+    sleep(0.3)
+
+def piano():
     turn_off_all_relays()
 
     sleep(0.2)
@@ -116,9 +141,24 @@ def wizards_in_winter():
     sleep(0.2)
 
     turn_off_all_relays()
-    sleep(0.2)
+    sleep(0.1)
     turn_on_all_relays()
     sleep(0.5)
+
+def alt_back_forth(delay=0.15):
+    turn_off_all_relays()
+
+    wizard_pins = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE]
+
+    for pin in wizard_pins:
+        set_relay(pin)
+        sleep(0.15)
+        set_relay(pin)
+
+    for pin in reversed(wizard_pins):
+        set_relay(pin)
+        sleep(delay)
+        set_relay(pin)
 
 def turn_off_all_relays():
     # use disco pin list to avoid rapid on/off of train
@@ -185,9 +225,7 @@ def main():
         msg.delete()
 
         if pin == WIZARDS:
-            wizards_in_winter()
-            wizards_in_winter()
-            wizards_in_winter()
+            wizards_main()
         elif pin == DISCO:
             disco_mode()
         else:

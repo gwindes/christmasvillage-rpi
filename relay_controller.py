@@ -22,6 +22,7 @@ POST_OFFICE = OUT4
 REINDEER_STABLES = OUT1
 TREE = OUT5
 TRAIN = OUT7
+C9 = OUT8
 
 # Modes
 ALL = 99
@@ -36,6 +37,7 @@ pin_list = [
     POST_OFFICE,
     REINDEER_STABLES,
     TREE,
+    C9,
     TRAIN
 ]
 
@@ -82,6 +84,9 @@ def parse_input_to_pin(input):
     elif input == 'WIZARDS':
         print('WIZARDS')
         return WIZARDS
+    elif input == 'C9':
+        print('C9')
+        return C9
     else:
         raise InvalidInputException()
 

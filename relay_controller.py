@@ -110,6 +110,8 @@ def wizards_main():
     turn_on_all_relays()
     for i in range(4): alt_back_forth()
 
+    turn_on_all_relays()
+
 def triple_beat():
     turn_off_all_relays()
 

@@ -90,6 +90,57 @@ def parse_input_to_pin(input):
     else:
         raise InvalidInputException()
 
+def blink(delay=0.2):
+    turn_on_all_relays()
+    sleep(delay)
+    turn_off_all_relays()
+
+def duck_duck_goose():
+    set_relay(C9)
+    pins = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE]
+    for _ in range(4):
+        for p in pins:
+            sleep(0.1)
+            turn_off_all_relays()
+            sleep(0.1)
+            turn_on_all_relays()
+
+def five_key_piano():
+    for i in range(34):
+        sleep(0.05)
+        turn_off_all_relays()
+        sleep(0.05)
+        turn_on_all_relays()
+
+def piano_n(pin_list):
+    for p in pin_list:
+        set_relay(p)
+        sleep(0.1)
+        set_relay(p)
+        sleep(0.1)
+
+def piano4():
+    p4 = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE]
+    piano_n(p4)
+
+def piano9():
+    p9 = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE, TREE, SANTA_HOUSE, REINDEER_STABLES]
+    piano_n(p9)
+
+def piano_4_4_9():
+    turn_off_all_relays()
+    piano4()
+    piano4()
+    piano9()
+
+def b2b2b1():
+    blink(delay=0.1)
+    blink(delay=0.1)
+    sleep(0.2)
+    blink(delay=0.1)
+    blink(delay=0.1)
+    sleep(0.2)
+    blink()
 
 def set_relay(pin):
     if pin == ALL:
@@ -108,12 +159,80 @@ def wizards_main():
     for i in range(6): triple_beat()
     piano()
     for i in range(6): triple_beat()
-    alt_back_forth(delay=0.3)
+    piano()
+    # alt_back_forth(delay=0.3)
+    for i in range(6): alt_back_forth()
+    blink()
+    piano()
     for i in range(4): alt_back_forth()
-    turn_off_all_relays()
-    sleep(0.1)
+    blink()
+    piano()
+    blink()
+    piano()
+    b2b2b1() # 0:29
+    blink()
+    blink()
+    for i in range(6): alt_back_forth() # 0:32
+    blink()
+    piano()
+    for i in range(6): alt_back_forth() # 0:38
+    blink()
+    piano()
+    blink()
+    piano()
+    blink()
+    b2b2b1()
+    #down piano
+    #guitar riff
+    piano_4_4_9() # 0:58
+    blink() # 1:10
+    piano()
+    blink()
+    piano()
+    blink()
+    b2b2b1()
+    for i in range(6): alt_back_forth() # 1:17
+    blink()
+    piano()
+    for i in range(6): alt_back_forth() # 1:24
+    blink()
+    piano()
+    blink() # 1:30
+    piano()
+    blink() # 1:32
+    #down piano
+    #prance piano
+    #guitar rift blink
+    # bg vocals
+    blink() # 2:07
+    piano()
+    blink()
+    piano()
+    blink() # 2:10
+    ###
+    b2b2b1() # 2:10  -- actually written as b2b2b1b1b1
+    blink()
+    blink()
+    ###
+    for i in range(6): alt_back_forth()  # 2:12
+    blink() # 2:18
+    piano()
+    for i in range(6): alt_back_forth()  # 2:19
+    blink()
+    #diag piano # 2:24 -> 2:30
+    blink()  # 2:26
+    blink()  # 2:27
+    blink()  # 2:28
+    blink()  # 2:29
+    #b4 # 2:30
+    for i in range(6): alt_back_forth()  # 2:30
+    five_key_piano()  # 2:45 -> 2:52
+    duck_duck_goose() # 2:59 -> 3:02
+    blink() #end 3:02
+
+    sleep(3)
     turn_on_all_relays()
-    for i in range(4): alt_back_forth()
+
 
 def triple_beat():
     turn_off_all_relays()

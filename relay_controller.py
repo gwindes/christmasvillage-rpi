@@ -234,6 +234,8 @@ def wizards_main():
     turn_on_all_relays()
 
 
+    turn_on_all_relays()
+
 def triple_beat():
     turn_off_all_relays()
 

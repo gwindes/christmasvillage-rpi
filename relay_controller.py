@@ -101,23 +101,53 @@ def duck_duck_goose():
     for _ in range(4):
         for p in pins:
             sleep(0.1)
-            turn_off_all_relays()
+            set_relay(p)
             sleep(0.1)
-            turn_on_all_relays()
+            set_relay(p)
 
 def five_key_piano():
     for i in range(34):
-        sleep(0.05)
+        sleep(0.075)
         turn_off_all_relays()
-        sleep(0.05)
+        sleep(0.075)
         turn_on_all_relays()
 
-def piano_n(pin_list):
+def guitar_riff(delay=0.3):
+    for _ in range(18):
+        set_relay(C9)
+        sleep(delay)
+        set_relay(C9)
+        sleep(delay)
+
+def down_piano(delay=0.15):
+    pin_list = [
+        POST_OFFICE,
+        TREE,
+        SANTA_HOUSE,
+        REINDEER_STABLES,
+        ELVES_BUNK,
+        REINDEER_STABLES,
+        SANTA_HOUSE,
+        TREE
+    ]
+
+    piano_n(pin_list, delay)
+
+def prance_piano(delay=0.2):
+    # TODO: Figure out what to do for this:
+    # piano() leaves lights on
+    # down_piano() doesn't
+    piano(delay)
+    down_piano(delay)
+    piano(delay)
+    down_piano(delay)
+
+def piano_n(pin_list, delay=0.1):
     for p in pin_list:
         set_relay(p)
-        sleep(0.1)
+        sleep(delay)
         set_relay(p)
-        sleep(0.1)
+        sleep(delay)
 
 def piano4():
     p4 = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE]
@@ -164,7 +194,7 @@ def wizards_main():
     for i in range(6): alt_back_forth()
     blink()
     piano()
-    for i in range(4): alt_back_forth()
+    for i in range(6): alt_back_forth()
     blink()
     piano()
     blink()
@@ -182,9 +212,10 @@ def wizards_main():
     piano()
     blink()
     b2b2b1()
-    #down piano
-    #guitar riff
+    down_piano() # 0:48
+    guitar_riff() # 0:51 # should continue through piano_4_4_9
     piano_4_4_9() # 0:58
+    piano_4_4_9()  # 1:04
     blink() # 1:10
     piano()
     blink()
@@ -200,9 +231,11 @@ def wizards_main():
     blink() # 1:30
     piano()
     blink() # 1:32
-    #down piano
+    piano()
+    down_piano()
     #prance piano
-    #guitar rift blink
+    prance_piano()
+    guitar_riff() # 1:39
     # bg vocals
     blink() # 2:07
     piano()
@@ -236,35 +269,29 @@ def wizards_main():
 
     turn_on_all_relays()
 
-def triple_beat():
+def triple_beat(delay=0.1):
     turn_off_all_relays()
 
-    sleep(0.1)
-    turn_on_all_relays()
-    sleep(0.1)
-    turn_off_all_relays()
-    sleep(0.1)
-    turn_on_all_relays()
-    sleep(0.1)
-    turn_off_all_relays()
-    sleep(0.1)
-    turn_on_all_relays()
-    sleep(0.3)
+    for _ in range(3):
+        sleep(delay)
+        turn_on_all_relays()
+        sleep(delay)
+        turn_off_all_relays()
 
-def piano():
+def piano(delay=0.2):
     turn_off_all_relays()
 
-    sleep(0.2)
+    sleep(delay)
     set_relay(ELVES_BUNK)
-    sleep(0.2)
+    sleep(delay)
     set_relay(REINDEER_STABLES)
-    sleep(0.2)
+    sleep(delay)
     set_relay(SANTA_HOUSE)
-    sleep(0.2)
+    sleep(delay)
     set_relay(TREE)
-    sleep(0.2)
+    sleep(delay)
     set_relay(POST_OFFICE)
-    sleep(0.2)
+    sleep(delay)
 
     turn_off_all_relays()
     sleep(0.1)
@@ -278,7 +305,7 @@ def alt_back_forth(delay=0.15):
 
     for pin in wizard_pins:
         set_relay(pin)
-        sleep(0.15)
+        sleep(delay)
         set_relay(pin)
 
     for pin in reversed(wizard_pins):

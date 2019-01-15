@@ -202,9 +202,12 @@ def wizards_main():
     b2b2b1() # 0:29
     blink()
     blink()
+
+    print('0:32')
     for i in range(6): alt_back_forth() # 0:32
     blink()
     piano()
+    print('0:38')
     for i in range(6): alt_back_forth() # 0:38
     blink()
     piano()
@@ -212,62 +215,84 @@ def wizards_main():
     piano()
     blink()
     b2b2b1()
+    print('0:48')
     down_piano() # 0:48
+    print('0:51')
     guitar_riff() # 0:51 # should continue through piano_4_4_9
+    print('0:58')
     piano_4_4_9() # 0:58
+    print('1:04')
     piano_4_4_9()  # 1:04
+    print('1:10')
     blink() # 1:10
     piano()
     blink()
     piano()
     blink()
     b2b2b1()
+    print('1:17')
     for i in range(6): alt_back_forth() # 1:17
     blink()
     piano()
+    print('1:24')
     for i in range(6): alt_back_forth() # 1:24
     blink()
     piano()
+    print('1:30')
     blink() # 1:30
     piano()
+    print('1:32')
     blink() # 1:32
     piano()
     down_piano()
-    #prance piano
     prance_piano()
+    print('1:39')
     guitar_riff() # 1:39
     # bg vocals
+    print('2:07')
     blink() # 2:07
     piano()
     blink()
     piano()
+    print('2:10')
     blink() # 2:10
     ###
+    print('2:10')
     b2b2b1() # 2:10  -- actually written as b2b2b1b1b1
     blink()
     blink()
     ###
+    print('2:12')
     for i in range(6): alt_back_forth()  # 2:12
+    print('2:18')
     blink() # 2:18
     piano()
+    print('2:19')
     for i in range(6): alt_back_forth()  # 2:19
     blink()
+    print('2:24 -> 2:30')
     #diag piano # 2:24 -> 2:30
+    print('2:26')
     blink()  # 2:26
+    print('2:27')
     blink()  # 2:27
+    print('2:28')
     blink()  # 2:28
+    print('2:29')
     blink()  # 2:29
+    print('2:30')
     #b4 # 2:30
+    print('2:30')
     for i in range(6): alt_back_forth()  # 2:30
+    print('2:45 -> 2:52')
     five_key_piano()  # 2:45 -> 2:52
+    print('2:59 -> 3:02')
     duck_duck_goose() # 2:59 -> 3:02
     blink() #end 3:02
 
     sleep(3)
     turn_on_all_relays()
 
-
-    turn_on_all_relays()
 
 def triple_beat(delay=0.1):
     turn_off_all_relays()

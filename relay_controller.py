@@ -85,6 +85,7 @@ def blink(delay=0.2):
     sleep(delay)
     turn_off_all_relays()
 
+
 def duck_duck_goose():
     set_relay(C9)
     pins = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE]
@@ -95,6 +96,7 @@ def duck_duck_goose():
             sleep(0.1)
             set_relay(p)
 
+
 def five_key_piano():
     for i in range(34):
         sleep(0.075)
@@ -102,12 +104,14 @@ def five_key_piano():
         sleep(0.075)
         turn_on_all_relays()
 
+
 def guitar_riff(delay=0.3):
     for _ in range(18):
         set_relay(C9)
         sleep(delay)
         set_relay(C9)
         sleep(delay)
+
 
 def down_piano(delay=0.15):
     pin_list = [
@@ -123,6 +127,7 @@ def down_piano(delay=0.15):
 
     piano_n(pin_list, delay)
 
+
 def prance_piano(delay=0.2):
     # TODO: Figure out what to do for this:
     # piano() leaves lights on
@@ -132,6 +137,7 @@ def prance_piano(delay=0.2):
     piano(delay)
     down_piano(delay)
 
+
 def piano_n(pin_list, delay=0.1):
     set_relay(C9)
     for p in pin_list:
@@ -140,19 +146,23 @@ def piano_n(pin_list, delay=0.1):
         set_relay(p)
         sleep(delay)
 
+
 def piano4():
     p4 = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE]
     piano_n(p4)
 
+
 def piano9():
     p9 = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE, TREE, SANTA_HOUSE, REINDEER_STABLES]
     piano_n(p9)
+
 
 def piano_4_4_9():
     turn_off_all_relays()
     piano4()
     piano4()
     piano9()
+
 
 def b2b2b1():
     blink(delay=0.1)
@@ -163,18 +173,20 @@ def b2b2b1():
     sleep(0.2)
     blink()
 
+
 def set_relay(pin):
     if pin == ALL:
         turn_on_all_relays()
         return
 
-    if GPIO.input(pin) == None:
+    if GPIO.input(pin) is None:
         print('pin {} is None'.format(pin))
 
     if GPIO.input(pin) == 1:
         GPIO.output(pin, GPIO.LOW)
     else:
         GPIO.output(pin, GPIO.HIGH)
+
 
 def wizards_main():
     for i in range(6): triple_beat()
@@ -279,7 +291,7 @@ def wizards_main():
     five_key_piano()  # 2:45 -> 2:52
     print('2:59 -> 3:02')
     duck_duck_goose() # 2:59 -> 3:02
-    blink() #end 3:02
+    blink()  # end 3:02
 
     sleep(3)
     turn_on_all_relays()
@@ -293,6 +305,7 @@ def triple_beat(delay=0.1):
         turn_on_all_relays()
         sleep(delay)
         turn_off_all_relays()
+
 
 def piano(delay=0.2):
     turn_off_all_relays()
@@ -328,6 +341,7 @@ def alt_back_forth(delay=0.15):
         set_relay(pin)
         sleep(delay)
         set_relay(pin)
+
 
 def turn_off_all_relays():
     # use disco pin list to avoid rapid on/off of train
@@ -436,7 +450,6 @@ def main():
             turn_off_all_relays()
         else:
             set_relay(pin)
-
 
 
 if __name__ == '__main__':

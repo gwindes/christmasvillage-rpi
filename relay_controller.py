@@ -1,7 +1,7 @@
 import boto3
 from time import sleep
 import RPi.GPIO as GPIO
-from random import randint
+from random import randint, choice
 
 GPIO.setmode(GPIO.BCM)
 
@@ -30,7 +30,23 @@ DISCO = 1337
 WIZARDS = 7331
 DUCK_DUCK_GOOSE = 7332
 OFF = 7300
-# pin_list = [2, 3, 4, 17, 27, 22, 10, 9]
+
+
+# Input to Pins Dict
+input_pin_dict = {
+    'SANTA_HOUSE':SANTA_HOUSE,
+    'ELVES_BUNK': ELVES_BUNK,
+    'POST_OFFICE': POST_OFFICE,
+    'REINDEER_STABLES': REINDEER_STABLES,
+    'TREE': TREE,
+    'TRAIN': TRAIN,
+    'ALL': ALL,
+    'DISCO': DISCO,
+    'WIZARDS': WIZARDS,
+    'C9': C9,
+    'DUCK_DUCK_GOOSE': DUCK_DUCK_GOOSE,
+    'OFF': OFF
+    }
 
 pin_list = [
     SANTA_HOUSE,
@@ -53,49 +69,16 @@ def init_gpio():
     for i in pin_list:
         GPIO.setup(i, GPIO.OUT)
 
-# turn into hashmap idiot...
+
 def parse_input_to_pin(input):
     input = input.upper()
-    if input == 'SANTA_HOUSE':
-        print('SANTA_HOUSE')
-        return SANTA_HOUSE
-    elif input == 'SANTA_HOUSE':
-        print('SANTA_HOUSE')
-        return SANTA_HOUSE
-    elif input == 'ELVES_BUNK':
-        print('ELVES_BUNK')
-        return ELVES_BUNK
-    elif input == 'POST_OFFICE':
-        print('POST_OFFICE')
-        return POST_OFFICE
-    elif input == 'REINDEER_STABLES':
-        print('REINDEER_STABLES')
-        return REINDEER_STABLES
-    elif input == 'TREE':
-        print('TREE')
-        return TREE
-    elif input == 'TRAIN':
-        print('TRAIN')
-        return TRAIN
-    elif input == 'ALL':
-        print('ALL')
-        return ALL
-    elif input == 'DISCO':
-        print('DISCO')
-        return DISCO
-    elif input == 'WIZARDS':
-        print('WIZARDS')
-        return WIZARDS
-    elif input == 'C9':
-        print('C9')
-        return C9
-    elif input == 'DUCK_DUCK_GOOSE':
-        print('DUCK_DUCK_GOOSE')
-        return DUCK_DUCK_GOOSE
-    elif input == 'OFF':
-        return OFF
-    else:
+
+    if input not in input_pin_dict:
         raise InvalidInputException()
+
+    print(input)
+    return input_pin_dict[input]
+
 
 def blink(delay=0.2):
     turn_on_all_relays()
@@ -398,15 +381,37 @@ def get_sqs():
     return queue
 
 
+def pick_random_action():
+    actions = [DISCO, WIZARDS, DUCK_DUCK_GOOSE]
+    random_action = choice(actions)
+
+    print("Random action: " + random_action)
+
+    if random_action == WIZARDS:
+        wizards_main()
+    elif random_action == DISCO:
+        disco_mode()
+    elif random_action == DUCK_DUCK_GOOSE:
+        duck_duck_goose_st()
+
+
 def main():
     init_gpio()
     queue = get_sqs()
+
+    max_count_before_random_action = 10
+    pick_interaction_counter = 0
 
     while True:
         sleep(3)
         messages = queue.receive_messages()
 
+        if pick_interaction_counter >= max_count_before_random_action:
+            pick_random_action()
+            pick_interaction_counter = 0
+
         if len(messages) == 0:
+            pick_interaction_counter += 1
             continue
 
         msg = messages[0]

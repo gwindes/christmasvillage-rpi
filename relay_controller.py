@@ -17,18 +17,19 @@ OUT8 = 9
 
 # PINS
 SANTA_HOUSE = OUT6
-ELVES_BUNK = OUT2
-POST_OFFICE = OUT4
-REINDEER_STABLES = OUT1
-TREE = OUT5
-TRAIN = OUT7
-C9 = OUT8
+ELVES_BUNK = OUT1
+POST_OFFICE = OUT2
+REINDEER_STABLES = OUT7
+TREE = OUT8
+TRAIN = OUT4
+C9 = OUT5
 
 # Modes
 ALL = 99
 DISCO = 1337
 WIZARDS = 7331
-
+DUCK_DUCK_GOOSE = 7332
+OFF = 7300
 # pin_list = [2, 3, 4, 17, 27, 22, 10, 9]
 
 pin_list = [
@@ -52,8 +53,9 @@ def init_gpio():
     for i in pin_list:
         GPIO.setup(i, GPIO.OUT)
 
-
+# turn into hashmap idiot...
 def parse_input_to_pin(input):
+    input = input.upper()
     if input == 'SANTA_HOUSE':
         print('SANTA_HOUSE')
         return SANTA_HOUSE
@@ -87,6 +89,11 @@ def parse_input_to_pin(input):
     elif input == 'C9':
         print('C9')
         return C9
+    elif input == 'DUCK_DUCK_GOOSE':
+        print('DUCK_DUCK_GOOSE')
+        return DUCK_DUCK_GOOSE
+    elif input == 'OFF':
+        return OFF
     else:
         raise InvalidInputException()
 
@@ -143,6 +150,7 @@ def prance_piano(delay=0.2):
     down_piano(delay)
 
 def piano_n(pin_list, delay=0.1):
+    set_relay(C9)
     for p in pin_list:
         set_relay(p)
         sleep(delay)
@@ -325,7 +333,7 @@ def piano(delay=0.2):
 
 def alt_back_forth(delay=0.15):
     turn_off_all_relays()
-
+    set_relay(C9)
     wizard_pins = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE]
 
     for pin in wizard_pins:
@@ -369,6 +377,17 @@ def disco_mode():
     sleep(0.5)
     turn_on_all_relays()
 
+
+def duck_duck_goose_st(delay=0.25):
+    pins = disco_pin_list
+    for _ in range(4):
+        for p in pins:
+            sleep(delay)
+            set_relay(p)
+            sleep(delay)
+            set_relay(p)
+
+
 def get_sqs():
     sqs = boto3.resource('sqs',
                          region_name='',
@@ -406,6 +425,10 @@ def main():
             wizards_main()
         elif pin == DISCO:
             disco_mode()
+        elif pin == DUCK_DUCK_GOOSE:
+            duck_duck_goose_st()
+        elif pin == OFF:
+            turn_off_all_relays()
         else:
             set_relay(pin)
 

@@ -1,3 +1,4 @@
+import os
 import boto3
 from time import sleep
 import RPi.GPIO as GPIO
@@ -22,9 +23,9 @@ SANTA_HOUSE = OUT6
 ELVES_BUNK = OUT1
 POST_OFFICE = OUT2
 REINDEER_STABLES = OUT7
-TREE = OUT8
+TREE = OUT5
 TRAIN = OUT4
-C9 = OUT5
+C9 = OUT8
 
 # Modes
 ALL = 99
@@ -389,11 +390,11 @@ def duck_duck_goose_st(delay=0.25):
 
 def get_sqs():
     sqs = boto3.resource('sqs',
-                         region_name='',
-                         aws_secret_access_key='',
-                         aws_access_key_id='',
+                         region_name='us-east-1',
+                         aws_secret_access_key=os.getenv('AWS_SECRET', ''),
+                         aws_access_key_id=os.getenv('AWS_KEY', ''),
                          use_ssl=True)
-    queue = sqs.Queue('')
+    queue = sqs.Queue(os.getenv('SQS_QUEUE', ''))
     return queue
 
 
@@ -433,20 +434,25 @@ def main():
     init_gpio()
     queue = get_sqs()
 
-    max_count_before_random_action = 10
+    max_count_before_random_action = 30
     pick_interaction_counter = 0
+    current_sleep_duration = 1
 
     while True:
-        sleep(3)
+        sleep(current_sleep_duration)
         messages = queue.receive_messages()
 
         if pick_interaction_counter >= max_count_before_random_action:
-            pick_random_action()
+            #pick_random_action()
+            turn_on_all_relays()
             pick_interaction_counter = 0
 
         if len(messages) == 0:
             pick_interaction_counter += 1
+            current_sleep_duration = 3
             continue
+        else:
+            current_sleep_duration = 1
 
         msg = messages[0]
 

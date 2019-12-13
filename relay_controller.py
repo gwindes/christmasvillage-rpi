@@ -360,7 +360,7 @@ def turn_on_all_relays():
 
 def turn_on_all_village_lights():
     # use disco pin list to avoid rapid on/off of train
-    village_pin_list = [SANTA_HOUSE, ELVES_BUNK, POST_OFFICE, REINDEER_STABLES, TREE, C9, TRAIN]
+    village_pin_list = [SANTA_HOUSE, ELVES_BUNK, POST_OFFICE, REINDEER_STABLES, TREE]
     for pin in village_pin_list:
         GPIO.output(pin, GPIO.LOW)
 

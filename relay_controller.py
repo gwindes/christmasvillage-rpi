@@ -2,6 +2,7 @@ import boto3
 from time import sleep
 import RPi.GPIO as GPIO
 from random import randint, choice
+import phpserialize as ps
 
 GPIO.setmode(GPIO.BCM)
 
@@ -34,7 +35,7 @@ OFF = 7300
 
 # Input to Pins Dict
 input_pin_dict = {
-    'SANTA_HOUSE':SANTA_HOUSE,
+    'SANTA_HOUSE': SANTA_HOUSE,
     'ELVES_BUNK': ELVES_BUNK,
     'POST_OFFICE': POST_OFFICE,
     'REINDEER_STABLES': REINDEER_STABLES,
@@ -396,17 +397,35 @@ def get_sqs():
 
 
 def pick_random_action():
-    actions = [DISCO, WIZARDS, DUCK_DUCK_GOOSE]
+    actions = ['DISCO', 'WIZARDS', 'DUCK_DUCK_GOOSE', 'DISCO', 'DISCO', 'DUCK_DUCK_GOOSE', 'DUCK_DUCK_GOOSE']
     random_action = choice(actions)
 
     print("Random action: " + random_action)
+    action = parse_input_to_pin(random_action)
 
-    if random_action == WIZARDS:
+    if action == WIZARDS:
         wizards_main()
-    elif random_action == DISCO:
+    elif action == DISCO:
         disco_mode()
-    elif random_action == DUCK_DUCK_GOOSE:
+    elif action == DUCK_DUCK_GOOSE:
         duck_duck_goose_st()
+
+
+class SQSMessage(object):
+    def __init__(self, message):
+        self.message = message
+
+
+def msg_object_hook(name, d):
+    cls = {b'App\\Jobs\\ChristmasVillageJob': SQSMessage}[name]
+    return cls(d[b'message'].decode())
+
+
+def parse_sqs_msg(body):
+    body = json.loads(body)
+    en = body['data']['command'].encode()
+    msg = ps.loads(en, object_hook=msg_object_hook)
+    return msg
 
 
 def main():
@@ -431,8 +450,8 @@ def main():
         msg = messages[0]
 
         try:
-            print(msg.body)
-            pin = parse_input_to_pin(msg.body)
+            parsed_msg = parse_sqs_msg(msg.body)
+            pin = parse_input_to_pin(parsed_msg.message)
         except InvalidInputException as ex:
             print(ex)
             msg.delete()

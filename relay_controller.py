@@ -3,6 +3,7 @@ from time import sleep
 import RPi.GPIO as GPIO
 from random import randint, choice
 import phpserialize as ps
+import json
 
 GPIO.setmode(GPIO.BCM)
 

@@ -358,6 +358,13 @@ def turn_on_all_relays():
         GPIO.output(pin, GPIO.LOW)
 
 
+def turn_on_all_village_lights():
+    # use disco pin list to avoid rapid on/off of train
+    village_pin_list = [SANTA_HOUSE, ELVES_BUNK, POST_OFFICE, REINDEER_STABLES, TREE, C9, TRAIN]
+    for pin in village_pin_list:
+        GPIO.output(pin, GPIO.LOW)
+
+
 def disco_mode():
     count = 120
     while count > 0:
@@ -444,7 +451,7 @@ def main():
 
         if pick_interaction_counter >= max_count_before_random_action:
             #pick_random_action()
-            turn_on_all_relays()
+            turn_on_all_village_lights()
             pick_interaction_counter = 0
 
         if len(messages) == 0:

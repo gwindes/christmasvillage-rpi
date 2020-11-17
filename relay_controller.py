@@ -20,12 +20,12 @@ OUT8 = 9
 
 # PINS
 SANTA_HOUSE = OUT6
-ELVES_BUNK = OUT1
-POST_OFFICE = OUT2
+ELVES_BUNK = OUT2
+POST_OFFICE = OUT8
 REINDEER_STABLES = OUT7
-TREE = OUT5
-TRAIN = OUT4
-C9 = OUT8
+TREE = OUT4
+TRAIN = OUT1
+C9 = OUT5  # not currently used
 
 # Modes
 ALL = 99
@@ -329,6 +329,7 @@ def piano(delay=0.2):
     sleep(0.1)
     turn_on_all_relays()
     sleep(0.5)
+
 
 def alt_back_forth(delay=0.15):
     turn_off_all_relays()

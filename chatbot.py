@@ -1,12 +1,3 @@
-"""
-Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the 'License'). You may not use this file except in compliance with the License. A copy of the License is located at
-
-    http://aws.amazon.com/apache2.0/
-
-or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-"""
 import sys
 import irc.bot
 import requests
@@ -14,6 +5,7 @@ import boto3
 from irc.schedule import DefaultScheduler
 import uuid
 import time
+import os
 
 VOTE_DURATION = 60
 
@@ -58,7 +50,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port, 'oauth:' + token)], username, username)
 
     def tally_votes(self):
-        print('counting votes')
+        print('Counting votes')
         max_count = 0
         voted_type = None
 
@@ -79,11 +71,11 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
     def send_vote_to_sqs(self, vote):
         print('Sending {} to village'.format(vote))
         sqs = boto3.resource('sqs',
-                             region_name='',
-                             aws_secret_access_key='',
-                             aws_access_key_id='',
+                             region_name='us-east-1',
+                             aws_secret_access_key=os.getenv('AWS_SECRET', ''),
+                             aws_access_key_id=os.getenv('AWS_KEY', ''),
                              use_ssl=True)
-        queue = sqs.Queue('')
+        queue = sqs.Queue(os.getenv('SQS_QUEUE', ''))
         v = self.vote_translation[vote]
         queue.send_message(MessageBody=v, MessageGroupId='1', MessageDeduplicationId=str(uuid.uuid4()))
         return queue
@@ -96,7 +88,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         self.last_vote_cast_time = time.time()
 
     def on_welcome(self, c, e):
-        'Joining ' + self.channel
+        print('Joining ' + self.channel)
 
         # You must request specific capabilities before you can use them
         c.cap('REQ', ':twitch.tv/membership')

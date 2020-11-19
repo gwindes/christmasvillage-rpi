@@ -1,3 +1,11 @@
+# for desktop only uncomment for local dev
+# import sys
+# import fake_rpi
+
+# sys.modules['RPi'] = fake_rpi.RPi
+# sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO
+
+# actual imports
 import os
 import boto3
 from time import sleep

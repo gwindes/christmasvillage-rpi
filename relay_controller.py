@@ -59,17 +59,19 @@ input_pin_dict = {
     'OFF': OFF
     }
 
-pin_list = [
-    SANTA_HOUSE,
-    ELVES_BUNK,
-    POST_OFFICE,
+# in order left to right
+PIN_LIST = [
     REINDEER_STABLES,
+    ELVES_BUNK,
     TREE,
+    SANTA_HOUSE,
+    POST_OFFICE,
     C9,
     TRAIN
 ]
 
-disco_pin_list = pin_list[:-1]
+DISCO_PIN_LIST = PIN_LIST[:-1]
+BUILDING_PIN_LIST = PIN_LIST[:-2]
 
 
 class InvalidInputException(Exception):
@@ -77,18 +79,18 @@ class InvalidInputException(Exception):
 
 
 def init_gpio():
-    for i in pin_list:
+    for i in PIN_LIST:
         GPIO.setup(i, GPIO.OUT)
 
 
-def parse_input_to_pin(input):
-    input = input.upper()
+def parse_input_to_pin(input_str):
+    input_str = input_str.upper()
 
-    if input not in input_pin_dict:
+    if input_str not in input_pin_dict:
         raise InvalidInputException()
 
-    print(input)
-    return input_pin_dict[input]
+    print(input_str)
+    return input_pin_dict[input_str]
 
 
 def blink(delay=0.2):
@@ -99,7 +101,7 @@ def blink(delay=0.2):
 
 def duck_duck_goose():
     set_relay(C9)
-    pins = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE]
+    pins = BUILDING_PIN_LIST
     for _ in range(4):
         for p in pins:
             sleep(0.1)
@@ -127,8 +129,8 @@ def guitar_riff(delay=0.3):
 def down_piano(delay=0.15):
     pin_list = [
         POST_OFFICE,
-        TREE,
         SANTA_HOUSE,
+        TREE,
         REINDEER_STABLES,
         ELVES_BUNK,
         REINDEER_STABLES,
@@ -159,12 +161,21 @@ def piano_n(pin_list, delay=0.1):
 
 
 def piano4():
-    p4 = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE]
+    p4 = BUILDING_PIN_LIST[:4]
     piano_n(p4)
 
 
 def piano9():
-    p9 = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE, TREE, SANTA_HOUSE, REINDEER_STABLES]
+    p9 = [
+        ELVES_BUNK,
+        REINDEER_STABLES,
+        TREE,
+        SANTA_HOUSE,
+        POST_OFFICE,
+        SANTA_HOUSE,
+        TREE,
+        REINDEER_STABLES
+    ]
     piano_n(p9)
 
 
@@ -326,9 +337,9 @@ def piano(delay=0.2):
     sleep(delay)
     set_relay(REINDEER_STABLES)
     sleep(delay)
-    set_relay(SANTA_HOUSE)
-    sleep(delay)
     set_relay(TREE)
+    sleep(delay)
+    set_relay(SANTA_HOUSE)
     sleep(delay)
     set_relay(POST_OFFICE)
     sleep(delay)
@@ -342,7 +353,7 @@ def piano(delay=0.2):
 def alt_back_forth(delay=0.15):
     turn_off_all_relays()
     set_relay(C9)
-    wizard_pins = [ELVES_BUNK, REINDEER_STABLES, SANTA_HOUSE, TREE, POST_OFFICE]
+    wizard_pins = [ELVES_BUNK, REINDEER_STABLES, TREE, SANTA_HOUSE, POST_OFFICE]
 
     for pin in wizard_pins:
         set_relay(pin)
@@ -357,19 +368,19 @@ def alt_back_forth(delay=0.15):
 
 def turn_off_all_relays():
     # use disco pin list to avoid rapid on/off of train
-    for pin in disco_pin_list:
+    for pin in DISCO_PIN_LIST:
         GPIO.output(pin, GPIO.HIGH)
 
 
 def turn_on_all_relays():
     # use disco pin list to avoid rapid on/off of train
-    for pin in disco_pin_list:
+    for pin in DISCO_PIN_LIST:
         GPIO.output(pin, GPIO.LOW)
 
 
 def turn_on_all_village_lights():
     # use disco pin list to avoid rapid on/off of train
-    village_pin_list = [SANTA_HOUSE, ELVES_BUNK, POST_OFFICE, REINDEER_STABLES, TREE]
+    village_pin_list = BUILDING_PIN_LIST
     for pin in village_pin_list:
         GPIO.output(pin, GPIO.LOW)
 
@@ -377,8 +388,8 @@ def turn_on_all_village_lights():
 def disco_mode():
     count = 120
     while count > 0:
-        r = randint(0, len(disco_pin_list)-1)
-        pin = disco_pin_list[r]
+        r = randint(0, len(DISCO_PIN_LIST) - 1)
+        pin = DISCO_PIN_LIST[r]
         set_relay(pin)
         count -= 1
         sleep(0.1)
@@ -395,7 +406,7 @@ def disco_mode():
 
 
 def duck_duck_goose_st(delay=0.25):
-    pins = disco_pin_list
+    pins = DISCO_PIN_LIST
     for _ in range(4):
         for p in pins:
             sleep(delay)
@@ -447,6 +458,13 @@ def parse_sqs_msg(body):
 
 
 def main():
+    pin_func_mapping = {
+        WIZARDS: wizards_main,
+        DISCO: disco_mode,
+        DUCK_DUCK_GOOSE: duck_duck_goose_st,
+        OFF: turn_off_all_relays
+    }
+
     init_gpio()
     queue = get_sqs()
 
@@ -456,7 +474,12 @@ def main():
 
     while True:
         sleep(current_sleep_duration)
-        messages = queue.receive_messages()
+        try:
+            messages = queue.receive_messages()
+        except Exception as ex:
+            # set messages to empty list on sqs failure
+            messages = list()
+            print(ex)
 
         if pick_interaction_counter >= max_count_before_random_action:
             #pick_random_action()
@@ -482,14 +505,8 @@ def main():
 
         msg.delete()
 
-        if pin == WIZARDS:
-            wizards_main()
-        elif pin == DISCO:
-            disco_mode()
-        elif pin == DUCK_DUCK_GOOSE:
-            duck_duck_goose_st()
-        elif pin == OFF:
-            turn_off_all_relays()
+        if pin in pin_func_mapping:
+            pin_func_mapping[pin]()
         else:
             set_relay(pin)
 

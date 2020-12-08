@@ -354,7 +354,7 @@ def piano(delay=0.2):
 def alt_back_forth(delay=0.15):
     turn_off_all_relays()
     set_relay(C9)
-    wizard_pins = [ELVES_BUNK, REINDEER_STABLES, TREE, SANTA_HOUSE, POST_OFFICE]
+    wizard_pins = BUILDING_PIN_LIST
 
     for pin in wizard_pins:
         set_relay(pin)

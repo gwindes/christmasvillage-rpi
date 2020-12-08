@@ -197,6 +197,11 @@ def b2b2b1():
     blink()
 
 
+def set_relays(pins=[]):
+    for pin in pins:
+        set_relay(pin)
+
+
 def set_relay(pin):
     if pin == ALL:
         turn_on_all_relays()
@@ -373,7 +378,6 @@ def turn_on_all_relays():
 
 
 def turn_on_all_village_lights():
-    # use disco pin list to avoid rapid on/off of train
     village_pin_list = BUILDING_PIN_LIST
     for pin in village_pin_list:
         GPIO.output(pin, GPIO.LOW)
@@ -388,15 +392,9 @@ def disco_mode():
         count -= 1
         sleep(0.1)
 
-    turn_on_all_relays()
+    blink(0.5)
     sleep(0.5)
-    turn_off_all_relays()
-    sleep(0.5)
-    turn_on_all_relays()
-    sleep(0.5)
-    turn_off_all_relays()
-    sleep(0.5)
-    turn_on_all_relays()
+    blink(0.5)
 
 
 def duck_duck_goose_st(delay=0.25):
@@ -407,6 +405,77 @@ def duck_duck_goose_st(delay=0.25):
             set_relay(p)
             sleep(delay)
             set_relay(p)
+
+
+def sound_viz(delay=0.25, repeat_num=5):
+    turn_off_all_relays()
+    sleep(delay)
+    cmds = [
+        [TREE],
+        [SANTA_HOUSE, ELVES_BUNK],
+        [SANTA_HOUSE, ELVES_BUNK],
+        [TREE],
+        [TREE],
+        [SANTA_HOUSE, ELVES_BUNK],
+        [POST_OFFICE, REINDEER_STABLES],
+        [POST_OFFICE, REINDEER_STABLES],
+        [SANTA_HOUSE, ELVES_BUNK],
+        [TREE]
+    ]
+
+    for _ in range(repeat_num):
+        for pins in cmds:
+            set_relays(pins)
+            sleep(delay)
+
+
+def alternate_buildings(delay=0.25, repeat_num=10):
+    left_mid_right = BUILDING_PIN_LIST[0], BUILDING_PIN_LIST[2], BUILDING_PIN_LIST[4]
+    inner_two = BUILDING_PIN_LIST[1], BUILDING_PIN_LIST[3]
+
+    turn_off_all_relays()
+    sleep(delay)
+
+    for _ in range(repeat_num):
+        set_relays(left_mid_right)
+        sleep(delay)
+        set_relays(left_mid_right)
+        sleep(delay)
+        set_relays(inner_two)
+        sleep(delay)
+        set_relays(inner_two)
+        sleep(delay)
+
+    set_relays(left_mid_right)
+    sleep(delay)
+    set_relays(left_mid_right)
+
+
+def warp_viz(delay=0.05, repeat_num=10, reverse=False):
+    cmds = [
+        [BUILDING_PIN_LIST[2]],
+        [BUILDING_PIN_LIST[1],BUILDING_PIN_LIST[3]],
+        [BUILDING_PIN_LIST[0], BUILDING_PIN_LIST[4]],
+        [BUILDING_PIN_LIST[2]],
+        [BUILDING_PIN_LIST[1], BUILDING_PIN_LIST[3]],
+        [BUILDING_PIN_LIST[0], BUILDING_PIN_LIST[4]],
+    ]
+
+    if reverse:
+        cmds.reverse()
+
+    turn_off_all_relays()
+    sleep(delay)
+    for _ in range(repeat_num):
+        for pins in cmds:
+            sleep(delay)
+            set_relays(pins)
+            sleep(delay)
+    turn_on_all_relays()
+
+
+def warp_viz_reverse(delay=0.05, repeat_num=10):
+    warp_viz(delay, repeat_num, True)
 
 
 def get_sqs():
@@ -420,18 +489,19 @@ def get_sqs():
 
 
 def pick_random_action():
-    actions = ['DISCO', 'WIZARDS', 'DUCK_DUCK_GOOSE', 'DISCO', 'DISCO', 'DUCK_DUCK_GOOSE', 'DUCK_DUCK_GOOSE']
-    random_action = choice(actions)
+    funcs = [
+        disco_mode,
+        wizards_main,
+        duck_duck_goose,
+        alternate_buildings,
+        warp_viz,
+        warp_viz_reverse
+    ]
 
-    print("Random action: " + random_action)
-    action = parse_input_to_pin(random_action)
+    random_action = choice(funcs)
 
-    if action == WIZARDS:
-        wizards_main()
-    elif action == DISCO:
-        disco_mode()
-    elif action == DUCK_DUCK_GOOSE:
-        duck_duck_goose_st()
+    print("Random action: " + str(random_action))
+    random_action()
 
 
 class SQSMessage(object):
@@ -476,7 +546,7 @@ def main():
             print(ex)
 
         if pick_interaction_counter >= max_count_before_random_action:
-            #pick_random_action()
+            pick_random_action()
             turn_on_all_village_lights()
             pick_interaction_counter = 0
 

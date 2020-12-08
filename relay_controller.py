@@ -333,17 +333,10 @@ def triple_beat(delay=0.1):
 def piano(delay=0.2):
     turn_off_all_relays()
 
-    sleep(delay)
-    set_relay(ELVES_BUNK)
-    sleep(delay)
-    set_relay(REINDEER_STABLES)
-    sleep(delay)
-    set_relay(TREE)
-    sleep(delay)
-    set_relay(SANTA_HOUSE)
-    sleep(delay)
-    set_relay(POST_OFFICE)
-    sleep(delay)
+    for pin in BUILDING_PIN_LIST:
+        sleep(delay)
+        set_relay(pin)
+        sleep(delay)
 
     turn_off_all_relays()
     sleep(0.1)

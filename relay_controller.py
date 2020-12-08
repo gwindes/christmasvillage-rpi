@@ -131,11 +131,11 @@ def down_piano(delay=0.15):
         POST_OFFICE,
         SANTA_HOUSE,
         TREE,
-        REINDEER_STABLES,
         ELVES_BUNK,
         REINDEER_STABLES,
-        SANTA_HOUSE,
-        TREE
+        ELVES_BUNK,
+        TREE,
+        SANTA_HOUSE
     ]
 
     piano_n(pin_list, delay)
@@ -167,14 +167,15 @@ def piano4():
 
 def piano9():
     p9 = [
-        ELVES_BUNK,
         REINDEER_STABLES,
+        ELVES_BUNK,
         TREE,
         SANTA_HOUSE,
         POST_OFFICE,
+        # TODO: Should POST_OFFICE be twice? To mimic end and restart from end
         SANTA_HOUSE,
         TREE,
-        REINDEER_STABLES
+        ELVES_BUNK
     ]
     piano_n(p9)
 

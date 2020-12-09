@@ -395,6 +395,7 @@ def disco_mode():
     blink(0.5)
     sleep(0.5)
     blink(0.5)
+    turn_on_all_relays()
 
 
 def duck_duck_goose_st(delay=0.25):

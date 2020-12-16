@@ -41,6 +41,10 @@ DISCO = 1337
 WIZARDS = 7331
 DUCK_DUCK_GOOSE = 7332
 OFF = 7300
+WARP_SPEED = 1338
+WARP_REVERSE = 1339
+ALT_BUILDINGS = 1340
+SPEAKER_VIZ = 1341
 
 
 # Input to Pins Dict
@@ -56,7 +60,11 @@ input_pin_dict = {
     'WIZARDS': WIZARDS,
     'C9': C9,
     'DUCK_DUCK_GOOSE': DUCK_DUCK_GOOSE,
-    'OFF': OFF
+    'OFF': OFF,
+    'WARP_SPEED': WARP_SPEED,
+    'WARP_REVERSE': WARP_REVERSE,
+    'ALT_BUILDINGS': ALT_BUILDINGS,
+    'SPEAKER_VIZ': SPEAKER_VIZ
     }
 
 # in order left to right
@@ -408,7 +416,7 @@ def duck_duck_goose_st(delay=0.25):
             set_relay(p)
 
 
-def sound_viz(delay=0.25, repeat_num=5):
+def speaker_viz(delay=0.25, repeat_num=5):
     turn_off_all_relays()
     sleep(delay)
     cmds = [
@@ -527,6 +535,10 @@ def main():
         WIZARDS: wizards_main,
         DISCO: disco_mode,
         DUCK_DUCK_GOOSE: duck_duck_goose_st,
+        WARP_SPEED: warp_viz,
+        WARP_REVERSE: warp_viz_reverse,
+        ALT_BUILDINGS: alternate_buildings,
+        SPEAKER_VIZ: speaker_viz
         OFF: turn_off_all_relays
     }
 

@@ -437,6 +437,8 @@ def speaker_viz(delay=0.25, repeat_num=5):
             set_relays(pins)
             sleep(delay)
 
+    turn_on_all_relays()
+
 
 def alternate_buildings(delay=0.25, repeat_num=10):
     left_mid_right = BUILDING_PIN_LIST[0], BUILDING_PIN_LIST[2], BUILDING_PIN_LIST[4]
@@ -458,6 +460,9 @@ def alternate_buildings(delay=0.25, repeat_num=10):
     set_relays(left_mid_right)
     sleep(delay)
     set_relays(left_mid_right)
+    sleep(delay)
+
+    turn_on_all_relays()
 
 
 def warp_viz(delay=0.05, repeat_num=10, reverse=False):
@@ -538,7 +543,7 @@ def main():
         WARP_SPEED: warp_viz,
         WARP_REVERSE: warp_viz_reverse,
         ALT_BUILDINGS: alternate_buildings,
-        SPEAKER_VIZ: speaker_viz
+        SPEAKER_VIZ: speaker_viz,
         OFF: turn_off_all_relays
     }
 

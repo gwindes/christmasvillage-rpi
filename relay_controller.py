@@ -509,7 +509,8 @@ def pick_random_action():
         duck_duck_goose,
         alternate_buildings,
         warp_viz,
-        warp_viz_reverse
+        warp_viz_reverse,
+        speaker_viz
     ]
 
     random_action = choice(funcs)
@@ -550,8 +551,8 @@ def main():
     init_gpio()
     queue = get_sqs()
 
-    max_count_before_random_action = 30
-    pick_interaction_counter = 0
+    max_time_before_random_action = 150
+    pick_interaction_timer = 0
     current_sleep_duration = 1
 
     while True:
@@ -563,13 +564,13 @@ def main():
             messages = list()
             print(ex)
 
-        if pick_interaction_counter >= max_count_before_random_action:
+        if pick_interaction_timer >= max_time_before_random_action:
             pick_random_action()
             turn_on_all_village_lights()
-            pick_interaction_counter = 0
+            pick_interaction_timer = 0
 
         if len(messages) == 0:
-            pick_interaction_counter += 1
+            pick_interaction_timer += 3
             current_sleep_duration = 3
             continue
         else:

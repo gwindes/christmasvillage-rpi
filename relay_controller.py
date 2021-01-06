@@ -508,7 +508,7 @@ def get_sqs():
 def pick_random_action():
     funcs = [
         disco_mode,
-        wizards_main,
+        # wizards_main,
         duck_duck_goose,
         alternate_buildings,
         warp_viz,
@@ -554,7 +554,7 @@ def main():
     init_gpio()
     queue = get_sqs()
 
-    max_time_before_random_action = 150
+    max_time_before_random_action = 30
     pick_interaction_timer = 0
     current_sleep_duration = 1
 
@@ -573,11 +573,11 @@ def main():
             pick_interaction_timer = 0
 
         if len(messages) == 0:
-            pick_interaction_timer += 3
-            current_sleep_duration = 3
+            pick_interaction_timer += 1
+            current_sleep_duration = 2
             continue
         else:
-            current_sleep_duration = 1
+            current_sleep_duration = 0.5
 
         msg = messages[0]
 

@@ -8,11 +8,14 @@
 # actual imports
 import os
 import boto3
-from time import sleep
 import RPi.GPIO as GPIO
-from random import randint, choice
 import phpserialize as ps
 import json
+
+from botocore.exceptions import ClientError
+from time import sleep
+from random import randint, choice
+
 
 GPIO.setmode(GPIO.BCM)
 
@@ -586,7 +589,14 @@ def main():
             msg.delete()
             continue
 
-        msg.delete()
+        try:
+            msg.delete()
+        except ClientError as ex:
+            print("Caught Exception (ClientError)")
+            print(ex)
+        except Exception as ex:
+            print("Default Caught Exception")
+            print(ex)
 
         if pin in pin_func_mapping:
             pin_func_mapping[pin]()

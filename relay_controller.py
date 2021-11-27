@@ -12,6 +12,10 @@ import RPi.GPIO as GPIO
 import phpserialize as ps
 import json
 
+# auto load env variables from .env file
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 from botocore.exceptions import ClientError
 from time import sleep
 from random import randint, choice
@@ -22,7 +26,7 @@ GPIO.setmode(GPIO.BCM)
 # OUTLET -> GPIO
 OUT1 = 2
 OUT2 = 3
-OUT3 = 4
+OUT3 = 18
 OUT4 = 17
 OUT5 = 27
 OUT6 = 22
@@ -30,13 +34,13 @@ OUT7 = 10
 OUT8 = 9
 
 # PINS
-SANTA_HOUSE = OUT6
-ELVES_BUNK = OUT2
-POST_OFFICE = OUT8
-REINDEER_STABLES = OUT7
-TREE = OUT4
-TRAIN = OUT1
-C9 = OUT5  # not currently used
+SANTA_HOUSE = OUT2
+ELVES_BUNK = OUT5
+POST_OFFICE = OUT4
+REINDEER_STABLES = OUT3
+TREE = OUT1
+TRAIN = OUT6
+C9 = OUT7
 
 # Modes
 ALL = 99

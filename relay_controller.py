@@ -24,23 +24,42 @@ from random import randint, choice
 GPIO.setmode(GPIO.BCM)
 
 # OUTLET -> GPIO
-OUT1 = 2
-OUT2 = 3
+#OUT1 = 2
+#OUT2 = 3
+#OUT3 = 18
+#OUT4 = 17
+#OUT5 = 27
+#OUT6 = 22
+#OUT7 = 10
+#OUT8 = 9
+
+# Pi3 GPIO mapping
+OUT1 = 14
+OUT2 = 15
 OUT3 = 18
-OUT4 = 17
-OUT5 = 27
-OUT6 = 22
-OUT7 = 10
-OUT8 = 9
+OUT4 = 23
+OUT5 = 24
+OUT6 = 25
+OUT7 = 8
+OUT8 = 7
 
 # PINS
-SANTA_HOUSE = OUT2
-ELVES_BUNK = OUT5
-POST_OFFICE = OUT4
-REINDEER_STABLES = OUT3
+#TREE = OUT1
+#SANTA_HOUSE = OUT2
+#REINDEER_STABLES = OUT3
+#POST_OFFICE = OUT4
+#ELVES_BUNK = OUT5
+#TRAIN = OUT6
+#C9 = OUT7
 TREE = OUT1
-TRAIN = OUT6
-C9 = OUT7
+SANTA_HOUSE = OUT2
+POST_OFFICE = OUT4
+ELVES_BUNK = OUT5
+REINDEER_STABLES = OUT6
+TRAIN = OUT7
+C9 = OUT8
+AMBIENT = OUT8
+
 
 # Modes
 ALL = 99
@@ -572,7 +591,7 @@ def main():
             print(ex)
 
         if pick_interaction_timer >= max_time_before_random_action:
-            pick_random_action()
+            #pick_random_action()
             turn_on_all_village_lights()
             pick_interaction_timer = 0
 

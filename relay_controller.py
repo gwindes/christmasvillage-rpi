@@ -229,9 +229,9 @@ def set_relay(pin):
         print('pin {} is None'.format(pin))
 
     if GPIO.input(pin) == 1:
-        GPIO.output(pin, GPIO.HIGH)
-    else:
         GPIO.output(pin, GPIO.LOW)
+    else:
+        GPIO.output(pin, GPIO.HIGH)
 
 
 def wizards_main():
@@ -564,7 +564,7 @@ def main():
     init_gpio()
     queue = get_sqs()
 
-    max_time_before_random_action = 30
+    max_time_before_random_action = 180
     pick_interaction_timer = 0
     current_sleep_duration = 1
 

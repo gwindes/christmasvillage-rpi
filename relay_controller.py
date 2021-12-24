@@ -24,15 +24,6 @@ from random import randint, choice
 GPIO.setmode(GPIO.BCM)
 
 # OUTLET -> GPIO
-#OUT1 = 2
-#OUT2 = 3
-#OUT3 = 18
-#OUT4 = 17
-#OUT5 = 27
-#OUT6 = 22
-#OUT7 = 10
-#OUT8 = 9
-
 # Pi3 GPIO mapping
 OUT1 = 14
 OUT2 = 15
@@ -43,14 +34,7 @@ OUT6 = 25
 OUT7 = 8
 OUT8 = 7
 
-# PINS
-#TREE = OUT1
-#SANTA_HOUSE = OUT2
-#REINDEER_STABLES = OUT3
-#POST_OFFICE = OUT4
-#ELVES_BUNK = OUT5
-#TRAIN = OUT6
-#C9 = OUT7
+# PINS (Update each year based on outlet usage)
 TREE = OUT1
 SANTA_HOUSE = OUT2
 POST_OFFICE = OUT4
@@ -245,9 +229,9 @@ def set_relay(pin):
         print('pin {} is None'.format(pin))
 
     if GPIO.input(pin) == 1:
-        GPIO.output(pin, GPIO.LOW)
-    else:
         GPIO.output(pin, GPIO.HIGH)
+    else:
+        GPIO.output(pin, GPIO.LOW)
 
 
 def wizards_main():
@@ -269,11 +253,13 @@ def wizards_main():
     blink()
 
     print('0:32')
-    for i in range(6): alt_back_forth() # 0:32
+    for i in range(6):
+        alt_back_forth() # 0:32
     blink()
     piano()
     print('0:38')
-    for i in range(6): alt_back_forth() # 0:38
+    for i in range(6):
+        alt_back_forth() # 0:38
     blink()
     piano()
     blink()
@@ -402,13 +388,13 @@ def alt_back_forth(delay=0.15):
 def turn_off_all_relays():
     # use disco pin list to avoid rapid on/off of train
     for pin in DISCO_PIN_LIST:
-        GPIO.output(pin, GPIO.HIGH)
+        GPIO.output(pin, GPIO.LOW)
 
 
 def turn_on_all_relays():
     # use disco pin list to avoid rapid on/off of train
     for pin in DISCO_PIN_LIST:
-        GPIO.output(pin, GPIO.LOW)
+        GPIO.output(pin, GPIO.HIGH)
 
 
 def turn_on_all_village_lights():

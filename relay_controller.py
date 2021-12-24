@@ -412,9 +412,10 @@ def turn_on_all_relays():
 
 
 def turn_on_all_village_lights():
+    print("ALL VILLAGE ON")
     village_pin_list = BUILDING_PIN_LIST
     for pin in village_pin_list:
-        GPIO.output(pin, GPIO.LOW)
+        GPIO.output(pin, GPIO.HIGH)
 
 
 def disco_mode():

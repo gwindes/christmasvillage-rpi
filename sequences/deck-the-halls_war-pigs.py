@@ -468,3 +468,5 @@ GPIO.output(ELVES_BUNK, GPIO.HIGH)
 sleep(0.05)
 GPIO.output(REINDEER_STABLES, GPIO.HIGH)
 sleep(0.05)
+
+turn_on_all_relays()

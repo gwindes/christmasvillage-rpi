@@ -1,0 +1,26 @@
+# This is a simple example sequence to get started with creating your own.
+# You can comment the file with a leading # sign.
+
+# The following commands are valid [ON, OFF, SLEEP, START_LOOP, END_LOOP]
+# The following pins are valid [TREE, SANTA_HOUSE, POST_OFFICE, ELVES_BUNK, REINDEER_STABLES, TRAIN, C9]
+
+# To start lets turn on the main Christmas tree, wait 1 second, then turn it off.
+ON TREE
+SLEEP 1
+OFF TREE
+SLEEP 1
+
+# We can also turn on multiple pins on one line. Then turn multiple off in one line
+# We're turning the TREE, SANTA_HOUSE, & POST_OFFICE on and then waiting 2 seconds then back off
+ON TREE SANTA_HOUSE POST_OFFICE
+SLEEP 2
+OFF TREE SANTA_HOUSE POST_OFFICE
+SLEEP 1
+
+# We can also use basic loop functions with the START_LOOP and END_LOOP commands
+# The following creates a simple loop that repeats 10 times.
+START_LOOP 10
+    ON TREE
+    SLEEP 0.25
+    OFF TREE
+    SLEEP 0.25

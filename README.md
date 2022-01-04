@@ -1,8 +1,8 @@
 # [ChristmasVillage.io](https://christmasvillage.io) Relay Controller
 
 ### Links
-[Live Stream Website & Controls](https://christmasvillage.io)  
-[Youtube](https://youtube.com/insert-channel)  
+[ChristmasVillage.io - Live Stream & Controls](https://christmasvillage.io)  
+[Youtube](https://www.youtube.com/channel/UC7OXhPt69vX3VBtggBRphAg)  
 [Instagram](https://instagram.com/christmasvillage.io)
 
 ### About

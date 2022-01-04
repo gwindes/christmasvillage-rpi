@@ -1,5 +1,7 @@
 # [ChristmasVillage.io](https://christmasvillage.io) Relay Controller
 
+<img src="https://christmasvillage.io/images/christmas-village.jpg" height="350" alt="Raspberry Pi Christmas Village"/>
+
 ### Links
 [ChristmasVillage.io - Live Stream & Controls](https://christmasvillage.io)  
 [Youtube](https://www.youtube.com/channel/UC7OXhPt69vX3VBtggBRphAg)  

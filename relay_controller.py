@@ -228,10 +228,14 @@ def set_relay(pin):
     if GPIO.input(pin) is None:
         print('pin {} is None'.format(pin))
 
+    print(f"{pin} is {GPIO.input(pin)}")
+
     if GPIO.input(pin) == 1:
         GPIO.output(pin, GPIO.LOW)
+        print(f"{pin} OFF")
     else:
         GPIO.output(pin, GPIO.HIGH)
+        print(f"{pin} ON")
 
 
 def wizards_main():

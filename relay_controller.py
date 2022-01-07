@@ -88,6 +88,16 @@ PIN_LIST = [
     TRAIN
 ]
 
+PIN_MAP = {
+    OUT1: "TREE",
+    OUT2: "SANTA_HOUSE",
+    OUT4: "POST_OFFICE",
+    OUT5: "ELVES_BUNK",
+    OUT6: "REINDEER_STABLES",
+    OUT7: "TRAIN",
+    OUT8: "C9"
+}
+
 DISCO_PIN_LIST = PIN_LIST[:-1]
 BUILDING_PIN_LIST = PIN_LIST[:-2]
 
@@ -228,14 +238,16 @@ def set_relay(pin):
     if GPIO.input(pin) is None:
         print('pin {} is None'.format(pin))
 
-    print(f"{pin} is {GPIO.input(pin)}")
+    pin_state = "ON" if GPIO.input(pin) == 1 else "OFF"
+    pin_name = PIN_MAP[pin]
+    print(f"{pin_name} is {pin_state}")
 
     if GPIO.input(pin) == 1:
         GPIO.output(pin, GPIO.LOW)
-        print(f"{pin} OFF")
+        print(f"Set {pin_name} OFF")
     else:
         GPIO.output(pin, GPIO.HIGH)
-        print(f"{pin} ON")
+        print(f"Set {pin_name} ON")
 
 
 def wizards_main():
@@ -397,7 +409,11 @@ def turn_off_all_relays():
 
 def turn_on_all_relays():
     # use disco pin list to avoid rapid on/off of train
+    print("TURN ON ALL")
     for pin in DISCO_PIN_LIST:
+        pin_state = "ON" if GPIO.input(pin) == 1 else "OFF"
+        pin_name = PIN_MAP[pin]
+        print(f"{pin_name} is {pin_state}")
         GPIO.output(pin, GPIO.HIGH)
 
 

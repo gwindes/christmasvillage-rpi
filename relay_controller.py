@@ -236,7 +236,7 @@ def set_relay(pin):
         return
 
     if GPIO.input(pin) is None:
-        print('pin {} is None'.format(pin))
+        print(f"pin {pin} is None")
 
     pin_state = "ON" if GPIO.input(pin) == 1 else "OFF"
     pin_name = PIN_MAP[pin]
@@ -414,7 +414,8 @@ def turn_on_all_relays():
         pin_state = "ON" if GPIO.input(pin) == 1 else "OFF"
         pin_name = PIN_MAP[pin]
         print(f"{pin_name} is {pin_state}")
-        GPIO.output(pin, GPIO.HIGH)
+        if pin_state == "OFF":
+            GPIO.output(pin, GPIO.HIGH)
 
 
 def turn_on_all_village_lights():
@@ -501,7 +502,7 @@ def alternate_buildings(delay=0.25, repeat_num=10):
 def warp_viz(delay=0.05, repeat_num=10, reverse=False):
     cmds = [
         [BUILDING_PIN_LIST[2]],
-        [BUILDING_PIN_LIST[1],BUILDING_PIN_LIST[3]],
+        [BUILDING_PIN_LIST[1], BUILDING_PIN_LIST[3]],
         [BUILDING_PIN_LIST[0], BUILDING_PIN_LIST[4]],
         [BUILDING_PIN_LIST[2]],
         [BUILDING_PIN_LIST[1], BUILDING_PIN_LIST[3]],

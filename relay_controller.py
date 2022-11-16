@@ -73,7 +73,6 @@ input_pin_dict = {
     'C9': C9,
     'DUCK_DUCK_GOOSE': DUCK_DUCK_GOOSE,
     'OFF': OFF,
-
     'WARP_SPEED': WARP_SPEED,
     'WARP_REVERSE': WARP_REVERSE,
     'ALT_BUILDINGS': ALT_BUILDINGS,
@@ -603,6 +602,8 @@ def main():
     max_time_before_random_action = 180
     pick_interaction_timer = 0
     current_sleep_duration = 1
+
+    print("Village is Ready")
 
     while True:
         sleep(current_sleep_duration)

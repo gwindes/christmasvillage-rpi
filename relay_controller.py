@@ -27,7 +27,7 @@ GPIO.setmode(GPIO.BCM)
 # Pi3 GPIO mapping
 OUT1 = 14
 OUT2 = 15
-OUT3 = 18
+OUT3 = 17
 OUT4 = 23
 OUT5 = 24
 OUT6 = 25
@@ -66,15 +66,26 @@ input_pin_dict = {
     'TREE': TREE,
     'TRAIN': TRAIN,
     'ALL': ALL,
+    'ALL_ON': ALL,
+    'ALL_OFF': OFF,
     'DISCO': DISCO,
     'WIZARDS': WIZARDS,
     'C9': C9,
     'DUCK_DUCK_GOOSE': DUCK_DUCK_GOOSE,
     'OFF': OFF,
+
     'WARP_SPEED': WARP_SPEED,
     'WARP_REVERSE': WARP_REVERSE,
     'ALT_BUILDINGS': ALT_BUILDINGS,
-    'SPEAKER_VIZ': SPEAKER_VIZ
+    'SPEAKER_VIZ': SPEAKER_VIZ,
+    'OUTLET_1': OUT1,
+    'OUTLET_2': OUT2,
+    'OUTLET_3': OUT3,
+    'OUTLET_4': OUT4,
+    'OUTLET_5': OUT5,
+    'OUTLET_6': OUT6,
+    'OUTLET_7': OUT7,
+    'OUTLET_8': OUT8
     }
 
 # in order left to right
@@ -91,6 +102,7 @@ PIN_LIST = [
 PIN_MAP = {
     OUT1: "TREE",
     OUT2: "SANTA_HOUSE",
+    OUT3: "OUTLET_3",
     OUT4: "POST_OFFICE",
     OUT5: "ELVES_BUNK",
     OUT6: "REINDEER_STABLES",
@@ -228,6 +240,7 @@ def b2b2b1():
 def set_relays(pins=[]):
     for pin in pins:
         set_relay(pin)
+        sleep(0.025)
 
 
 def set_relay(pin):
@@ -248,7 +261,6 @@ def set_relay(pin):
     else:
         GPIO.output(pin, GPIO.HIGH)
         print(f"Set {pin_name} ON")
-
 
 def wizards_main():
     for i in range(6): triple_beat()
@@ -405,12 +417,14 @@ def turn_off_all_relays():
     # use disco pin list to avoid rapid on/off of train
     for pin in DISCO_PIN_LIST:
         GPIO.output(pin, GPIO.LOW)
+        sleep(0.01)
 
 
 def turn_on_all_relays():
     # use disco pin list to avoid rapid on/off of train
     print("TURN ON ALL")
     for pin in DISCO_PIN_LIST:
+        sleep(0.025)
         pin_state = "ON" if GPIO.input(pin) == 1 else "OFF"
         pin_name = PIN_MAP[pin]
         print(f"{pin_name} is {pin_state}")
@@ -422,6 +436,7 @@ def turn_on_all_village_lights():
     print("ALL VILLAGE ON")
     village_pin_list = BUILDING_PIN_LIST
     for pin in village_pin_list:
+        sleep(0.025)
         GPIO.output(pin, GPIO.HIGH)
 
 
